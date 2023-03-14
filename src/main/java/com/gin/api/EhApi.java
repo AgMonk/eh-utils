@@ -13,10 +13,7 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -103,7 +100,7 @@ public class EhApi {
     /**
      * 异步请求一个地址
      * @param url      地址
-     * @param Callback 响应处理方法
+     * @param callback 响应处理方法
      */
     public void get(String url, Callback callback) throws InterruptedException {
         get(Collections.singleton(url), callback);
@@ -156,7 +153,7 @@ public class EhApi {
      * @return map
      */
     public HashMap<String, Document> getDocument(Collection<String> urls) throws InterruptedException {
-        return get(urls, response -> {
+        return getUrls(urls, response -> {
             assert response.body() != null;
             return Jsoup.parse(response.body().string());
         });
@@ -180,7 +177,7 @@ public class EhApi {
      * @return 画廊对象
      */
     public HashMap<String, GalleryPage> getGalleryPage(Collection<String> urls) throws InterruptedException {
-        return get(urls, response -> {
+        return getUrls(urls, response -> {
             assert response.body() != null;
             return new GalleryPage(Jsoup.parse(response.body().string()));
         });
@@ -194,7 +191,6 @@ public class EhApi {
     public GalleryPage getGalleryPage(String url) throws IOException {
         return new GalleryPage(getDocument(url));
     }
-
 
     /**
      * 请求多个图片详情页地址,返回原图地址
@@ -210,15 +206,34 @@ public class EhApi {
 
     /**
      * 请求多个原图地址，返回重定向的真实地址
-     * @param urls urls
+     * @param originalUrls urls
      * @return 重定向地址
      */
     public HashMap<String, String> getRedirectUrl(Collection<String> originalUrls) throws InterruptedException {
-        return get(originalUrls, response -> {
+        return getUrls(originalUrls, response -> {
             if (response.code() == 302) {
                 return response.header("Location");
             }
             throw new IOException("请求失败, 请重试");
         });
+    }
+
+    /**
+     * 异步请求多个地址, 阻塞到所有请求成功, 转换为指定类型返回
+     * @param urls urls
+     * @return map
+     */
+    public <T> HashMap<String, T> getUrls(Collection<String> urls, ResponseHandler<T> handler) throws InterruptedException {
+        final HashMap<String, T> map = new HashMap<>(urls.size());
+        // 缺少的页
+        List<String> lackUrls = new ArrayList<>(urls);
+        do {
+            // 请求缺少页, 放入返回结果
+            map.putAll(get(lackUrls, handler));
+            // 重新计算缺少页
+            lackUrls = urls.stream().filter(u -> !map.containsKey(u)).collect(Collectors.toList());
+            // 当还有缺少页时，继续请求
+        } while (lackUrls.size() > 0);
+        return map;
     }
 }
