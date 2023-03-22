@@ -13,6 +13,7 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.SocketTimeoutException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -135,12 +136,17 @@ public class EhApi {
         get(urls, new CountDownCallback(latch) {
             @Override
             public void handleFailure(Call call, String url, IOException e) {
-                e.printStackTrace();
+                if (e instanceof SocketTimeoutException) {
+                    System.err.println("[WARN] " + e.getLocalizedMessage() + " : " + url);
+                } else {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void handleResponse(Call call, String url, Response response) throws IOException {
                 map.put(url, handler.handle(response));
+                response.close();
             }
         });
         latch.await();
