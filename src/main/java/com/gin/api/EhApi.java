@@ -228,12 +228,19 @@ public class EhApi {
      * @return 重定向地址
      */
     public HashMap<String, String> getRedirectUrl(Collection<String> originalUrls) throws InterruptedException {
-        return getUrls(originalUrls, response -> {
+        final HashMap<String, String> res = new HashMap<>(originalUrls.size());
+        final String fullImg = "fullimg.php";
+        // 没有原图的，直接用预览图
+        originalUrls.stream().filter(u->!u.contains(fullImg)).collect(Collectors.toList()).forEach(u->res.put(u,u));
+        // 有原图的，请求原图
+        final List<String> hasOriginal = originalUrls.stream().filter(u -> u.contains(fullImg)).collect(Collectors.toList());
+        res.putAll(getUrls(hasOriginal, response -> {
             if (response.code() == 302) {
                 return response.header("Location");
             }
             throw new IOException("请求失败, 请重试");
-        });
+        }));
+        return res;
     }
 
     /**
