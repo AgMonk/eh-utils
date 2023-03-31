@@ -238,6 +238,9 @@ public class EhApi {
             if (response.code() == 302) {
                 return response.header("Location");
             }
+            if (response.code() == 200) {
+                throw new IOException("请求失败, 请重试: "+response.body().string());
+            }
             throw new IOException("请求失败, 请重试");
         }));
         return res;
