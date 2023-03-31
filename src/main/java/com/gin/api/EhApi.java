@@ -9,6 +9,8 @@ import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -206,7 +208,17 @@ public class EhApi {
     public HashMap<String, String> getOriginalUrl(Collection<String> imageUrls) throws InterruptedException {
         final HashMap<String, Document> documentMap = getDocument(imageUrls);
         final HashMap<String, String> result = new HashMap<>(documentMap.size());
-        documentMap.forEach((s, document) -> result.put(s, document.select("#i7 > a").get(0).attr("href")));
+        documentMap.forEach((s, document) -> {
+            final Elements select = document.select("#i7 > a");
+            if (!select.isEmpty()) {
+                result.put(s, select.get(0).attr("href"));
+            }else{
+                final Element img = document.getElementById("img");
+                if (img!=null) {
+                    result.put(s, img.attr("src"));
+                }
+            }
+        });
         return result;
     }
 
