@@ -19,10 +19,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 public class Gallery {
-    /**
-     * 图片详情页链接
-     */
-    List<String> imagePageUrls;
+    List<GalleryImageThumbnail> thumbnails;
     /**
      * 所有分页的链接
      */
@@ -53,7 +50,7 @@ public class Gallery {
             throw new RuntimeException("画廊页不能为空");
         }
         final List<GalleryPage> list = galleryPages.stream().sorted(Comparator.comparingInt(o -> o.page)).collect(Collectors.toList());
-        this.imagePageUrls = list.stream().flatMap(i->i.getImagePageUrls().stream()).collect(Collectors.toList());
+        this.thumbnails = list.stream().flatMap(i -> i.getThumbnails().stream()).collect(Collectors.toList());
 
         final GalleryPage firstPage = list.get(0);
         this.pages = firstPage.getPages();
@@ -63,4 +60,5 @@ public class Gallery {
         this.id = firstPage.getId();
         this.tag = firstPage.getTag();
     }
+
 }

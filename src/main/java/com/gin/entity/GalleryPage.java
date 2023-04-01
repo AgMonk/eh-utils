@@ -24,10 +24,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class GalleryPage {
     public static final Pattern URL_PATTERN = Pattern.compile("/g/(\\d+)/(.{10})");
-    /**
-     * 图片详情页链接
-     */
-    List<String> imagePageUrls;
+    List<GalleryImageThumbnail> thumbnails;
     /**
      * 所有分页的链接
      */
@@ -56,7 +53,6 @@ public class GalleryPage {
      * 画廊随机TAG
      */
     String tag;
-
 
     public GalleryPage(Document document) {
         {
@@ -96,7 +92,6 @@ public class GalleryPage {
             this.tag = galleryIdTag.getTag();
         }
 
-        this.imagePageUrls = document.getElementsByClass("gdtl").stream().map(doc -> doc.getElementsByTag("a").get(0).attr("href")).collect(Collectors.toList());
-
+        this.thumbnails = document.getElementsByClass("gdtl").stream().map(GalleryImageThumbnail::new).collect(Collectors.toList());
     }
 }
