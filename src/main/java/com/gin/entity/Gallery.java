@@ -22,7 +22,7 @@ public class Gallery {
     /**
      * 图片详情页链接
      */
-    List<String> images;
+    List<String> imagePageUrls;
     /**
      * 所有分页的链接
      */
@@ -31,6 +31,10 @@ public class Gallery {
      * 画廊标题
      */
     String title;
+    /**
+     * 日文标题
+     */
+    String titleJp;
     /**
      * 最大页
      */
@@ -49,11 +53,12 @@ public class Gallery {
             throw new RuntimeException("画廊页不能为空");
         }
         final List<GalleryPage> list = galleryPages.stream().sorted(Comparator.comparingInt(o -> o.page)).collect(Collectors.toList());
-        this.images = list.stream().flatMap(i->i.getImages().stream()).collect(Collectors.toList());
+        this.imagePageUrls = list.stream().flatMap(i->i.getImagePageUrls().stream()).collect(Collectors.toList());
 
         final GalleryPage firstPage = list.get(0);
         this.pages = firstPage.getPages();
         this.title = firstPage.getTitle();
+        this.titleJp = firstPage.getTitleJp();
         this.maxPages = firstPage.getMaxPages();
         this.id = firstPage.getId();
         this.tag = firstPage.getTag();

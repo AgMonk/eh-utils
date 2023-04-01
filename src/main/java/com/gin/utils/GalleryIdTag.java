@@ -1,4 +1,4 @@
-package com.gin.entity;
+package com.gin.utils;
 
 import lombok.Getter;
 

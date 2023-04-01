@@ -1,6 +1,6 @@
 package com.gin.callback;
 
-import okhttp3.Response;
+import com.gin.entity.ResponseContext;
 
 import java.io.IOException;
 
@@ -13,9 +13,9 @@ import java.io.IOException;
 public interface ResponseHandler<T> {
     /**
      * 将响应转换为指定类型
-     * @param response 响应
+     * @param context 响应
      * @return T
      * @throws IOException 异常
      */
-    T handle(Response response) throws IOException;
+    T handle(ResponseContext context) throws IOException;
 }   

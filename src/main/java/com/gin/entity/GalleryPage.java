@@ -1,5 +1,6 @@
 package com.gin.entity;
 
+import com.gin.utils.GalleryIdTag;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,7 +27,7 @@ public class GalleryPage {
     /**
      * 图片详情页链接
      */
-    List<String> images;
+    List<String> imagePageUrls;
     /**
      * 所有分页的链接
      */
@@ -35,6 +36,10 @@ public class GalleryPage {
      * 画廊标题
      */
     String title;
+    /**
+     * 日文标题
+     */
+    String titleJp;
     /**
      * 当前页
      */
@@ -54,8 +59,14 @@ public class GalleryPage {
 
 
     public GalleryPage(Document document) {
-        final Element titleElement = document.getElementById("gn");
-        this.title = titleElement != null ? titleElement.ownText() : null;
+        {
+            final Element titleElement = document.getElementById("gn");
+            this.title = titleElement != null ? titleElement.ownText() : null;
+        }
+        {
+            final Element titleElement = document.getElementById("gj");
+            this.titleJp = titleElement != null ? titleElement.ownText() : null;
+        }
 
         //翻页组件
         final Element pager = document.getElementsByClass("ptt").get(0);
@@ -85,7 +96,7 @@ public class GalleryPage {
             this.tag = galleryIdTag.getTag();
         }
 
-        this.images = document.getElementsByClass("gdtl").stream().map(doc -> doc.getElementsByTag("a").get(0).attr("href")).collect(Collectors.toList());
+        this.imagePageUrls = document.getElementsByClass("gdtl").stream().map(doc -> doc.getElementsByTag("a").get(0).attr("href")).collect(Collectors.toList());
 
     }
 }
