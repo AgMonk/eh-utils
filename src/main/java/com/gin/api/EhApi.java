@@ -1,9 +1,9 @@
 package com.gin.api;
 
-import com.gin.entity.Gallery;
-import com.gin.entity.GalleryImagePage;
-import com.gin.entity.GalleryPage;
+import com.gin.entity.*;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.Nullable;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -78,5 +78,22 @@ public class EhApi {
         }
     }
 
+    /**
+     * 请求图像限额
+     * @return 限额
+     */
+    @Nullable
+    public ImageLimit getImageLimit() throws IOException {
+        String home = "https://e-hentai.org/home.php";
+        final ResponseContext context = client.getContext(home);
+        @SuppressWarnings("SpellCheckingInspection")
+        final Elements elements = context.getDocument().select(".homebox strong");
+        if (elements.size()>=2) {
+            final int current = Integer.parseInt(elements.get(0).ownText());
+            final int max = Integer.parseInt(elements.get(1).ownText());
+            return new ImageLimit(current, max);
+        }
+        return null;
+    }
 
 }
