@@ -3,7 +3,9 @@ package com.gin.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -20,10 +22,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class Gallery {
     List<GalleryImageThumbnail> thumbnails;
-    /**
-     * 所有分页的链接
-     */
-    List<String> pages;
     /**
      * 画廊标题
      */
@@ -53,7 +51,6 @@ public class Gallery {
         this.thumbnails = list.stream().flatMap(i -> i.getThumbnails().stream()).collect(Collectors.toList());
 
         final GalleryPage firstPage = list.get(0);
-        this.pages = firstPage.getPages();
         this.title = firstPage.getTitle();
         this.titleJp = firstPage.getTitleJp();
         this.maxPages = firstPage.getMaxPages();
@@ -61,4 +58,22 @@ public class Gallery {
         this.tag = firstPage.getTag();
     }
 
+    /**
+     * 获取所有分页链接
+     * @return 分页链接
+     */
+    public List<String> findAllPages() {
+        return getAllPages(id, tag, this.maxPages);
+    }
+
+    @NotNull
+    public static List<String> getAllPages(long id, String tag, int maxPages) {
+        final String firstUrl = String.format("https://exhentai.org/g/%d/%s/", id, tag);
+        final ArrayList<String> list = new ArrayList<>();
+        list.add(firstUrl);
+        for (int i = 1; i < maxPages; i++) {
+            list.add(firstUrl + "?p=" + i);
+        }
+        return list;
+    }
 }

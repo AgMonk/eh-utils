@@ -28,7 +28,7 @@ public class EhApi {
     public Gallery getGallery(String url) throws InterruptedException, IOException {
         final GalleryPage page = getGalleryPage(url);
         // 所有分页链接
-        final List<String> pages = page.getPages();
+        final List<String> pages = page.getAllPages();
         // 返回结果
         final HashMap<String, GalleryPage> resultMap = new HashMap<>(pages.size());
         // 放入第一页

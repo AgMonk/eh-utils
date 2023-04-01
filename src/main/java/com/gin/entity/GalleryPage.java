@@ -8,7 +8,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -81,11 +80,6 @@ public class GalleryPage {
         //第一页的url
         final String firstUrl = pages.stream().filter(e -> "1".equals(e.ownText())).map(e -> e.attr("href")).findFirst().orElse(null);
         if (firstUrl != null) {
-            this.pages = new ArrayList<>();
-            this.pages.add(firstUrl);
-            for (int i = 1; i < this.maxPages; i++) {
-                this.pages.add(firstUrl + "?p=" + i);
-            }
             // 解析id和tag
             final GalleryIdTag galleryIdTag = new GalleryIdTag(firstUrl);
             this.id = galleryIdTag.getId();
@@ -93,5 +87,9 @@ public class GalleryPage {
         }
 
         this.thumbnails = document.getElementsByClass("gdtl").stream().map(GalleryImageThumbnail::new).collect(Collectors.toList());
+    }
+
+    public List<String> getAllPages() {
+        return Gallery.getAllPages(id, tag, this.maxPages);
     }
 }
