@@ -15,6 +15,7 @@ import org.jsoup.select.Elements;
 @Getter
 @NoArgsConstructor
 public class GalleryImagePage {
+    public static final String ERROR_509 = "https://exhentai.org/img/509.gif";
     /**
      * 标题
      */

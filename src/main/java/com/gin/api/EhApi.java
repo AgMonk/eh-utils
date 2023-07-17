@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.gin.entity.GalleryImagePage.ERROR_509;
+
 /**
  * 主类
  * @author : ginstone
@@ -69,6 +71,9 @@ public class EhApi {
      */
     public String getOriginalUrl(String imagePageUrl) throws IOException {
         final GalleryImagePage imagePage = new GalleryImagePage(client.getContext(imagePageUrl).getDocument());
+        if (ERROR_509.equals(imagePage.getSrc())) {
+            throw new IOException("509错误,请切换其他可用线路");
+        }
         if (imagePage.hasOriginalUrl()) {
             // 有原图地址，请求原图地址
             return client.getContext(imagePage.getRedirectUrl()).getRedirectUrl();
